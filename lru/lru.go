@@ -321,10 +321,10 @@ func (j *lruJ) walk(fqn string, de fs.DirEntry) error {
 	if lom.Atime().After(dontEvictTime) {
 		return nil
 	}
-	if lom.IsCopy() {
+	if lom.HasCopies() && lom.IsCopy() {
 		return nil
 	}
-	if !lom.IsHRW() {
+	if !j.skipMisplaced() && !lom.IsHRW() {
 		j.misplaced = append(j.misplaced, lom)
 		return nil
 	}
@@ -363,9 +363,6 @@ func (j *lruJ) evict() (size int64, err error) {
 	j.oldWork = j.oldWork[:0]
 	// 2.
 	for _, lom := range j.misplaced {
-		if j.ini.T.RebalanceInfo().IsRebalancing {
-			continue
-		}
 		// 2.1: remove misplaced obj
 		if err = cmn.RemoveFile(lom.FQN); err != nil {
 			glog.Warningf("%s: %v", lom, err)
@@ -499,6 +496,17 @@ func (j *lruJ) sortBsize(bcks []cmn.Bck) {
 	for i := range bcks {
 		bcks[i] = sized[i].b
 	}
+}
+
+func (j *lruJ) skipMisplaced() (skip bool) {
+	rr := j.ini.T.RebResInfo()
+	if rr.Rebalance.Running || rr.Rebalance.Aborted {
+		return true
+	}
+	if rr.Resilver.Running || rr.Resilver.Aborted {
+		return true
+	}
+	return
 }
 
 //////////////

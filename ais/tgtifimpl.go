@@ -64,13 +64,10 @@ func (t *targetrunner) GetGFN(gfnType cluster.GFNType) cluster.GFN {
 	return nil
 }
 
-func (t *targetrunner) RebalanceInfo() cluster.RebalanceInfo {
-	_, running := reb.IsRebalancing(cmn.ActRebalance)
-	_, runningLocal := reb.IsRebalancing(cmn.ActResilver)
-	return cluster.RebalanceInfo{
-		IsRebalancing: running || runningLocal,
-		RebID:         t.rebManager.RebID(),
-	}
+func (t *targetrunner) RebResInfo() (rr cluster.RebResInfo) {
+	rr.Rebalance.ID, rr.Rebalance.Running = reb.IsRebalancing(cmn.ActRebalance)
+	rr.Resilver.ID, rr.Resilver.Running = reb.IsRebalancing(cmn.ActResilver)
+	return
 }
 
 // gets triggered by the stats evaluation of a remaining capacity

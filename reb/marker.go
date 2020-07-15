@@ -15,12 +15,12 @@ const (
 	resilverMarker  = ".resilver_marker"
 )
 
-func IsRebalancing(kind string) (aborted, running bool) {
+func IsRebalancing(kind string) (id cmn.XactID, aborted, running bool) {
 	cmn.Assert(kind == cmn.ActRebalance || kind == cmn.ActResilver)
 	if fs.MarkerExists(getMarkerName(kind)) {
 		aborted = true
 	}
-	running = xaction.Registry.IsXactRunning(xaction.RegistryXactFilter{Kind: kind})
+	id, running = xaction.Registry.IsXactRunning(xaction.RegistryXactFilter{Kind: kind})
 	if !running {
 		return
 	}

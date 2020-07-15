@@ -48,7 +48,7 @@ func (reb *Manager) RebStatus(status *Status) {
 		rsmap      = (*cluster.Smap)(reb.smap.Load())
 		tsmap      = reb.t.GetSowner().Get()
 	)
-	status.Aborted, status.Running = IsRebalancing(cmn.ActRebalance)
+	_, status.Aborted, status.Running = IsRebalancing(cmn.ActRebalance)
 	status.Stage = reb.stages.stage.Load()
 	status.RebID = reb.rebID.Load()
 	status.Quiescent = reb.isQuiescent()

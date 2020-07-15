@@ -83,7 +83,7 @@ type Target interface {
 	GetFSPRG() fs.PathRunGroup
 	GetDB() dbdriver.Driver
 	Cloud(*Bck) CloudProvider
-	RebalanceInfo() RebalanceInfo
+	RebResInfo() RebResInfo
 	RunLRU(id string)
 
 	GetObject(w io.Writer, lom *LOM, started time.Time) error
@@ -102,9 +102,17 @@ type Target interface {
 	BMDVersionFixup(r *http.Request, bck cmn.Bck, sleep bool)
 }
 
-type RebalanceInfo struct {
-	RebID         int64
-	IsRebalancing bool
+type RebResInfo struct {
+	Rebalance struct {
+		ID      cmn.XactID
+		Aborted bool
+		Running bool
+	}
+	Resilver struct {
+		ID      cmn.XactID
+		Aborted bool
+		Running bool
+	}
 }
 
 type RebManager interface {

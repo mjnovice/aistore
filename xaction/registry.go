@@ -379,9 +379,14 @@ func (r *registry) abort(args abortArgs) {
 	wg.Wait()
 }
 
-func (r *registry) IsXactRunning(query RegistryXactFilter) (running bool) {
+func (r *registry) IsXactRunning(query RegistryXactFilter) (id cmn.XactID, running bool) {
 	entry := r.GetRunning(query)
-	return entry != nil
+	if entry == nil {
+		return
+	}
+	running = true
+	id = entry.Get().ID()
+	return
 }
 
 func (r *registry) matchingXactsStats(match func(xact cmn.Xact) bool) []cmn.XactStats {

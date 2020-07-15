@@ -32,7 +32,7 @@ func (s *RebalanceTargetStats) FillFromTrunner(r *Trunner) {
 	s.Ext.RebTxSize = r.Core.get(RebTxSize)
 	s.Ext.RebRxCount = r.Core.get(RebRxCount)
 	s.Ext.RebRxSize = r.Core.get(RebRxSize)
-	s.Ext.RebID = r.T.RebalanceInfo().RebID
+	s.Ext.RebID = r.T.RebResInfo().Rebalance.ID.Int()
 
 	s.ObjCountX = s.Ext.RebTxCount + s.Ext.RebRxCount
 	s.BytesCountX = s.Ext.RebTxSize + s.Ext.RebRxSize
